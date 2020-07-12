@@ -5,7 +5,11 @@
  */
 package ec.edu.ups.controlador;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,4 +86,49 @@ public class ControladorDeTexto {
     
     
     //metodo encargado de desencriptar un archivo de texto
+    
+    public String desencriptar(String rutaFinal) throws IOException {
+        String texto = "";
+        try {
+
+            FileReader ficheroOrigen = new FileReader(rutaFinal);
+            BufferedReader archivoLectura = new BufferedReader(ficheroOrigen);
+
+            int valor = archivoLectura.read();
+
+            while (valor != -1) {
+                char aux = (char) valor;
+                texto = texto.concat(Character.toString(aux));
+                valor = archivoLectura.read();
+            }
+
+            archivoLectura.close();
+
+        } catch (FileNotFoundException ex2) {
+            System.out.println("El archivo no ha sido encontrado");
+        }
+
+        String desencriptar = "";
+
+        for (int i = 0; i < texto.length(); i++) {
+            char letra = texto.charAt(i);
+            String le = String.valueOf(letra);
+            for (Map.Entry<Character, Character> letra2 : Diccionario.entrySet()) {
+                String le2 = String.valueOf(letra2.getValue());
+
+                if (le.equalsIgnoreCase(le2)) {
+                    // si la varibale le asignida el dato de tipo String letra es mayuscula nos devolvera un true
+                    if (Character.isUpperCase(letra)) {
+                        desencriptar = desencriptar.concat(String.valueOf(letra2.getKey()).toUpperCase());
+                        System.out.println(desencriptar);
+                    } else {
+                        desencriptar = desencriptar.concat(String.valueOf(letra2.getKey()));
+                        System.out.println(desencriptar);
+                    }
+                }
+            }
+        }
+
+        return desencriptar;
+    }
 }
