@@ -4,18 +4,29 @@
  * and open the template in the editor.
  */
 package ec.edu.ups.vista;
+import ec.edu.ups.controlador.ControladorDeTexto;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author linar
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
+    
+     private ControladorDeTexto controladorTexto;
 
     /**
      * Creates new form VentanaEncriptado
      */
     public VentanaPrincipal() {
         initComponents();
+        controladorTexto = new ControladorDeTexto();
+        
     }
 
     /**
@@ -29,7 +40,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jButton4 = new javax.swing.JButton();
         LRuta = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtRuta = new javax.swing.JTextField();
         btnBuscar = new javax.swing.JButton();
         btnDesencriptar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -44,19 +55,29 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         LRuta.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         LRuta.setText("Ruta");
 
-        jTextField1.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+        txtRuta.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        txtRuta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtRutaKeyTyped(evt);
             }
         });
 
         btnBuscar.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnBuscar.setText("Buscar Ruta");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         btnDesencriptar.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnDesencriptar.setText("Desencriptar");
         btnDesencriptar.setEnabled(false);
+        btnDesencriptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDesencriptarActionPerformed(evt);
+            }
+        });
 
         txtAreaTexto.setColumns(20);
         txtAreaTexto.setRows(5);
@@ -64,6 +85,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         btnLimpiar.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnLimpiar.setText("Limpiar");
+        btnLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -85,7 +111,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                                 .addComponent(btnBuscar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnDesencriptar))
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtRuta, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(57, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -93,7 +119,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(43, 43, 43)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtRuta, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(LRuta))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -108,11 +134,80 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+/**
+     * Metodo para el boton de limpiar. Es el encargado de limpiar las cajas de
+     * texto y de poner invisble al boton de buscar
+     *
+     * @param evt
+     */
+    
+    private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+        limpiar();
+    }//GEN-LAST:event_btnLimpiarActionPerformed
+/**
+     * El metodo btnBuscarActionPerformed se encarga de buscar d la rutaa
+     * ingresada en el computador huesped para poder explorar dedentro de si
+     * segun los datos ingresados
+     *
+     * @param evt
+     */
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        // TODO add your handling code here:
+         JFileChooser menu = new JFileChooser();
 
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.TXT", "txt");
+
+        menu.setFileFilter(filtro);
+
+        menu.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        int seleccionar = menu.showOpenDialog(this);
+
+        if (seleccionar == JFileChooser.APPROVE_OPTION) {
+
+            File fichero = menu.getSelectedFile();
+            txtRuta.setText(fichero.getAbsolutePath());
+            btnDesencriptar.setEnabled(true);
+
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+/**
+     * Metodo encargado de desencriptar un archivo .txt. Además, comprueba si es
+     * un directori o no pero tambien muestra mensajes en caso de que pase lo
+     * anteriormente mencionado
+     *
+     * @param evt
+     */
+    private void btnDesencriptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesencriptarActionPerformed
+        // TODO add your handling code here:
+        String ruta = txtRuta.getText();
+        if (ruta == null) {
+            JOptionPane.showMessageDialog(this, "Escriba o seleccione la ruta");
+        } else {
+            if (controladorTexto.comprobarRuta(ruta)) {
+                try {
+                    String text = controladorTexto.desencriptar(ruta);
+                    txtAreaTexto.setText(text);
+                    btnDesencriptar.setEnabled(false);
+                } catch (IOException ex) {
+                    Logger.getLogger(VentanaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "La ruta no existe o es una carpeta");
+                limpiar();
+            }
+        }
+    }//GEN-LAST:event_btnDesencriptarActionPerformed
+
+    private void txtRutaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtRutaKeyTyped
+        // TODO add your handling code here:
+        btnDesencriptar.setEnabled(true);
+    }//GEN-LAST:event_txtRutaKeyTyped
+
+
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -148,6 +243,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
     }
+    
+     /**
+     * Metodo encargado de limpiar las cajas de texto y ademas de desvanecer el
+     * boton de buscar
+     */
+    public void limpiar() {
+        txtAreaTexto.setText("");
+        txtRuta.setText("");
+        btnDesencriptar.setEnabled(false);
+
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel LRuta;
@@ -156,7 +262,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextArea txtAreaTexto;
+    private javax.swing.JTextField txtRuta;
     // End of variables declaration//GEN-END:variables
 }
