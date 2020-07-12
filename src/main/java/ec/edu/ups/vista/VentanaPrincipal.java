@@ -56,6 +56,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         btnDesencriptar.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnDesencriptar.setText("Desencriptar");
+        btnDesencriptar.setEnabled(false);
 
         txtAreaTexto.setColumns(20);
         txtAreaTexto.setRows(5);
